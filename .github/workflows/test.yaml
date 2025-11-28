@@ -41,39 +41,39 @@ jobs:
       - name: Add plugin (Unix)
         if: runner.os != 'Windows'
         run: |
-          vfox add --source https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip 1password
+          vfox add --source https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip op
 
       - name: Add plugin (Windows)
         if: runner.os == 'Windows'
         run: |
-          vfox add --source https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip 1password
+          vfox add --source https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip op
 
       - name: List available versions (Unix)
         if: runner.os != 'Windows'
         run: |
           eval "$(vfox activate bash)"
-          vfox search 1password | head -20
+          vfox search op | head -20
 
       - name: List available versions (Windows)
         if: runner.os == 'Windows'
         run: |
           Invoke-Expression "$(vfox activate pwsh)"
-          vfox search 1password | Select-Object -First 20
+          vfox search op | Select-Object -First 20
 
-      - name: Install 1password (Unix)
+      - name: Install op (Unix)
         if: runner.os != 'Windows'
         run: |
-          vfox install 1password@2.30.0
-          vfox use -g 1password@2.30.0
+          vfox install op@2.30.0
+          vfox use -g op@2.30.0
           eval "$(vfox activate bash)"
           echo "PATH=$PATH"
           op --version
 
-      - name: Install 1password (Windows)
+      - name: Install op (Windows)
         if: runner.os == 'Windows'
         run: |
-          vfox install 1password@2.30.0
-          vfox use -g 1password@2.30.0
+          vfox install op@2.30.0
+          vfox use -g op@2.30.0
           Invoke-Expression "$(vfox activate pwsh)"
           echo "PATH=$env:PATH"
           op --version
