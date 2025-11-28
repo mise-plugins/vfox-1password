@@ -17,34 +17,27 @@ function PLUGIN:PreInstall(ctx)
         cli_path = "op2"
     end
 
-    local base_url = "https://cache.agilebits.com/dist/1P/" .. cli_path .. "/pkg/v" .. version .. "/"
-    local download_url
-    local filename
-
+    -- Map OS type
+    local os_name = os_type
     if os_type == "darwin" then
-        -- macOS uses universal pkg
-        filename = "op_apple_universal_v" .. version .. ".pkg"
-        download_url = base_url .. filename
-    else
-        -- Map OS type
-        local os_name = os_type
-        if os_type == "windows" then
-            os_name = "windows"
-        end
-
-        -- Map architecture
-        local arch = arch_type
-        if arch_type == "x86_64" then
-            arch = "amd64"
-        elseif arch_type == "i386" or arch_type == "i686" then
-            arch = "386"
-        elseif arch_type == "aarch64" then
-            arch = "arm64"
-        end
-
-        filename = "op_" .. os_name .. "_" .. arch .. "_v" .. version .. ".zip"
-        download_url = base_url .. filename
+        os_name = "darwin"
+    elseif os_type == "windows" then
+        os_name = "windows"
     end
+
+    -- Map architecture
+    local arch = arch_type
+    if arch_type == "x86_64" then
+        arch = "amd64"
+    elseif arch_type == "i386" or arch_type == "i686" then
+        arch = "386"
+    elseif arch_type == "aarch64" then
+        arch = "arm64"
+    end
+
+    local base_url = "https://cache.agilebits.com/dist/1P/" .. cli_path .. "/pkg/v" .. version .. "/"
+    local filename = "op_" .. os_name .. "_" .. arch .. "_v" .. version .. ".zip"
+    local download_url = base_url .. filename
 
     -- Verify URL exists
     local resp = http.head({ url = download_url })
