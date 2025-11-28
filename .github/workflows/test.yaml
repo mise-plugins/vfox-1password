@@ -19,32 +19,10 @@ jobs:
       - name: Install mise
         uses: jdx/mise-action@v2
 
-      - name: List available versions (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          mise ls-remote "vfox:${{ github.repository }}" | head -20
+      - name: List available versions
+        run: mise ls-remote "vfox:${{ github.repository }}" | head -20
 
-      - name: List available versions (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          mise ls-remote "vfox:${{ github.repository }}" | Select-Object -First 20
-
-      - name: Install 1password (Unix)
-        if: runner.os != 'Windows'
+      - name: Install and test 1password
         run: |
           mise install "vfox:${{ github.repository }}@2.30.0"
-          eval "$(mise activate bash)"
-          mise use -g "vfox:${{ github.repository }}@2.30.0"
-          echo "PATH=$PATH"
-          op --version
-
-      - name: Install 1password (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          mise install "vfox:${{ github.repository }}@2.30.0"
-          . $(mise activate pwsh | Out-String)
-          mise use -g "vfox:${{ github.repository }}@2.30.0"
-          echo "PATH=$env:PATH"
-          op --version
+          mise exec "vfox:${{ github.repository }}@2.30.0" -- op --version
