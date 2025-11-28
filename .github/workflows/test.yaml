@@ -1,0 +1,79 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install vfox (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          echo "deb [trusted=yes] https://apt.fury.io/versionfox/ /" | sudo tee /etc/apt/sources.list.d/versionfox.list
+          sudo apt-get update
+          sudo apt-get install vfox
+
+      - name: Install vfox (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew tap version-fox/tap
+          brew install vfox
+
+      - name: Install scoop (Windows)
+        if: runner.os == 'Windows'
+        uses: MinoruSekine/setup-scoop@v4
+
+      - name: Install vfox (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          scoop install vfox
+
+      - name: Add plugin (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          vfox add --source https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip 1password
+
+      - name: Add plugin (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          vfox add --source https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip 1password
+
+      - name: List available versions (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          eval "$(vfox activate bash)"
+          vfox search 1password | head -20
+
+      - name: List available versions (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Invoke-Expression "$(vfox activate pwsh)"
+          vfox search 1password | Select-Object -First 20
+
+      - name: Install 1password (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          vfox install 1password@2.30.0
+          vfox use -g 1password@2.30.0
+          eval "$(vfox activate bash)"
+          echo "PATH=$PATH"
+          op --version
+
+      - name: Install 1password (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          vfox install 1password@2.30.0
+          vfox use -g 1password@2.30.0
+          Invoke-Expression "$(vfox activate pwsh)"
+          echo "PATH=$env:PATH"
+          op --version
