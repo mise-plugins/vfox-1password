@@ -3,7 +3,7 @@ PLUGIN = {}
 
 --- !!! MUST BE SET !!!
 --- Plugin name
-PLUGIN.name = "op"
+PLUGIN.name = "1password"
 --- Plugin version
 PLUGIN.version = "0.1.0"
 --- Plugin homepage
